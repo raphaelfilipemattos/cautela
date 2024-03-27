@@ -9,31 +9,16 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     public $password;
     public $authKey;
     public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
+    public $pessoa;
+    public $sigla_posto_grad;
+       
 
     /**
      * {@inheritdoc}
      */
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return self::getUsuario(' idpessoa = :idpessoa ', ['idpessoa' => $id]);
     }
 
     /**
@@ -41,13 +26,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return self::getUsuario(' md5(idusuario||identidade||senha) = :token ', ['token' => $token]);
     }
 
     /**
@@ -58,13 +37,43 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findByUsername($username)
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
+       return self::getUsuario('identidade = :username', ['username' => $username]);
+    }
+    
+    public static function getUsuario(string $criterio, Array $valores){
+       $pessoa = Pessoa::find()->where($criterio, $valores)->one();
+      
+       if ( empty($pessoa) ) return false;       
 
-        return null;
+       $user = new User();
+       $user->id = $pessoa->idpessoa;
+       $user->password = $pessoa->senha;
+       $user->username = $pessoa->identidade;
+       $user->authKey = md5($pessoa->identidade);
+       $user->accessToken = md5($pessoa->idpessoa.$pessoa->identidade.$pessoa->senha);
+       $user->pessoa = $pessoa;       
+       $user->sigla_posto_grad = $pessoa->postograd;
+       
+       return $user;  
+    }
+    
+    public function nomeApresentacao(){
+       return  $this->pessoa->postograd.' - '.$this->pessoa->nome_guerra;
+    }
+    
+    public static function login($login)
+    {
+      $resposta = self::getUsuario(" ( identidade = :login", ['login' => $login]);
+     
+      return $resposta;
+    }
+
+    
+    public static function getUsuarioLogado(){
+        if (\Yii::$app->user->isGuest ){              
+              return false;
+        }
+        return \Yii::$app->user->identity;
     }
 
     /**
@@ -99,6 +108,12 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        $resposta = $this->password === md5($password);  
+        
+        return $resposta;
     }
+
+ 
+
+
 }

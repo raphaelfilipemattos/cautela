@@ -65,16 +65,7 @@ class Pessoa extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[Materials]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMaterials()
-    {
-        return $this->hasMany(Material::class, ['iddetentor' => 'idpessoa']);
-    }
-
+    
     public function beforeSave($insert){
         $this->updated_at = date("Y-m-d H:i:s");
         if ($insert){

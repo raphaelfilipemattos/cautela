@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Cautela;
 use app\models\Cautelaitens;
 use app\models\Material;
+use app\models\User;
 use Exception;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -21,6 +22,9 @@ class CautelaController extends Controller
      */
     public function behaviors()
     {
+        if ( User::getUsuarioLogado() == false ) {
+             $this->redirect("/site/login");
+        }
         return array_merge(
             parent::behaviors(),
             [
@@ -117,7 +121,7 @@ class CautelaController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            "materiaisdisponiveis" => Material::getMateriaisUsuario(1),
+            "materiaisdisponiveis" => Material::getMateriaisUsuario( User::getUsuarioLogado()->id ),
             "materiais" => []
         ]);
     }
@@ -146,7 +150,7 @@ class CautelaController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            "materiaisdisponiveis" => Material::getMateriaisUsuario(1),
+            "materiaisdisponiveis" => Material::getMateriaisUsuario( User::getUsuarioLogado()->id ),
             "materiais" => $materiais
         ]);
     }
@@ -185,7 +189,7 @@ class CautelaController extends Controller
 
         
         $model->flagbaixa = true;
-        $model->idpessoa_recebeu = 1; //TODO: REVER
+        $model->idpessoa_recebeu =  User::getUsuarioLogado()->id ; 
         $model->datahora_retorno = date('Y-m-d H:i:s');
         return $model->save();
 

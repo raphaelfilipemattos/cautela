@@ -4,6 +4,7 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
+use app\models\User;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
@@ -31,30 +32,39 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 
 <header id="header">
     <?php
+
+$itens[] = ['label' => 'Home', 'url' => ['/site/index']];
+    if (! Yii::$app->user->isGuest ){
+        $itens += [
+            ['label' => 'Dependencias', 'url' => ['/dependencias/index']],
+            ['label' => 'Pessoas', 'url' => ['/pessoa/index']],
+            ['label' => 'Materiais', 'url' => ['/material/index']],
+            ['label' => 'Cautelas', 'url' => ['/cautela/index']],
+            '<li class="nav-item">'
+                    . Html::beginForm(['/site/logout'])
+                    . Html::submitButton(
+                        'Logout (' . User::getUsuarioLogado()->nomeApresentacao() . ')',
+                        ['class' => 'nav-link btn btn-link logout']
+                    )
+                    . Html::endForm()
+                    . '</li>'
+        ] ;
+    }else{
+        $itens[] = ['label' => 'Login', 'url' => ['/site/login']];
+    }
+   
+
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
         'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top']
     ]);
+    
+          
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'Dependencias', 'url' => ['/dependencias/index']],
-            ['label' => 'Pessoas', 'url' => ['/pessoa/index']],
-            ['label' => 'Materiais', 'url' => ['/material/index']],
-            ['label' => 'Cautelas', 'url' => ['/cautela/index']],
-            Yii::$app->user->isGuest
-                ? ['label' => 'Login', 'url' => ['/site/login']]
-                : '<li class="nav-item">'
-                    . Html::beginForm(['/site/logout'])
-                    . Html::submitButton(
-                        'Logout (' . Yii::$app->user->identity->username . ')',
-                        ['class' => 'nav-link btn btn-link logout']
-                    )
-                    . Html::endForm()
-                    . '</li>'
-        ]
+        'items' => $itens
     ]);
     NavBar::end();
     ?>

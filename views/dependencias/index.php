@@ -26,8 +26,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'nome',
-            ['attribute' => 'iddetentor', 'label' => 'Detentor', 'value' => function ($data) {
-                return $data->getDetentor()->nome_guerra;
+            ['attribute' => 'iddetentor_direto', 'label' => 'Detentor direto', 'value' => function ($data) {
+                return $data->getDetentorDireto()->nome_guerra;
+             }
+            ],
+            ['attribute' => 'iddetentor_indireto', 'label' => 'Detentor indireto', 'value' => function ($data) {
+                return $data->getDetentorIndireto()->nome_guerra;
              }
             ],
             [

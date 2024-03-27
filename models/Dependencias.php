@@ -29,10 +29,11 @@ class Dependencias extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['nome','iddetentor',], 'required'],
-            [['iddetentor'], 'integer'],
+            [['nome','iddetentor_direto','iddetentor_indireto',], 'required'],
+            [['iddetentor_direto','iddetentor_indireto'], 'integer'],
             [['nome'], 'string', 'max' => 100],
-            [['iddetentor'], 'exist', 'skipOnError' => true, 'targetClass' => Pessoa::class, 'targetAttribute' => ['iddetentor' => 'idpessoa']],
+            [['iddetentor_direto'], 'exist', 'skipOnError' => true, 'targetClass' => Pessoa::class, 'targetAttribute' => ['iddetentor_direto' => 'idpessoa']],
+            [['iddetentor_indireto'], 'exist', 'skipOnError' => true, 'targetClass' => Pessoa::class, 'targetAttribute' => ['iddetentor_indireto' => 'idpessoa']],
         ];
     }
 
@@ -44,7 +45,8 @@ class Dependencias extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'nome' => 'Nome',
-            'iddetentor' => 'Detentor',
+            'iddetentor_direto' => 'Detentor direto',
+            'iddetentor_indireto' => 'Detentor indireto',
         ];
     }
 
@@ -58,8 +60,13 @@ class Dependencias extends \yii\db\ActiveRecord
         return $this->hasMany(Material::class, ['iddependencias' => 'id'])->all();
     }
 
-    public function getDetentor()
+    public function getDetentorDireto()
     {
-        return $this->hasOne(Pessoa::class, ['idpessoa' => 'iddetentor'])->one();
+        return $this->hasOne(Pessoa::class, ['idpessoa' => 'iddetentor_direto'])->one();
+    }
+
+    public function getDetentorIndireto()
+    {
+        return $this->hasOne(Pessoa::class, ['idpessoa' => 'iddetentor_indireto'])->one();
     }
 }

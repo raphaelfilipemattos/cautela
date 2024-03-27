@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Material;
+use app\models\User;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -18,6 +19,9 @@ class MaterialController extends Controller
      */
     public function behaviors()
     {
+        if ( User::getUsuarioLogado() == false ) {
+            $this->redirect("/site/login");
+       }
         return array_merge(
             parent::behaviors(),
             [
