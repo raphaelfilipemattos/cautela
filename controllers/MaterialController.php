@@ -43,7 +43,7 @@ class MaterialController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Material::find(),
+            'query' => Material::getQueryMateriaisUsuario(User::getUsuarioLogado()->id),
             /*
             'pagination' => [
                 'pageSize' => 50

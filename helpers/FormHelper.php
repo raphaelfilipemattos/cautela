@@ -70,7 +70,7 @@ class FormHelper {
      }
 
      public static function msgAlerta($msg){
-        return Yii::$app->session->setFlash('notice', $msg);
+        return Yii::$app->session->setFlash('warning', $msg);
      }
 
      public static function formataCPF($cpf){

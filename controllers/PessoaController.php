@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\FormHelper;
 use app\models\Pessoa;
 use app\models\User;
 use yii\data\ActiveDataProvider;
@@ -81,6 +82,11 @@ class PessoaController extends Controller
      */
     public function actionCreate()
     {
+        if (! User::getUsuarioLogado()->pessoa->admin){
+            FormHelper::msgAlerta("Somente administradores podem acessar.");
+            return   $this->redirect("/site/index");        
+
+        }
         $model = new Pessoa();
 
         if ($this->request->isPost) {
@@ -105,6 +111,11 @@ class PessoaController extends Controller
      */
     public function actionUpdate($idpessoa)
     {
+        if (! User::getUsuarioLogado()->pessoa->admin && $idpessoa != User::getUsuarioLogado()->id){
+            FormHelper::msgAlerta("Somente administradores podem acessar.");
+            return   $this->redirect("/pessoa/index");        
+
+        }
         $model = $this->findModel($idpessoa);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
@@ -125,6 +136,11 @@ class PessoaController extends Controller
      */
     public function actionDelete($idpessoa)
     {
+        if (! User::getUsuarioLogado()->pessoa->admin && $idpessoa){
+            FormHelper::msgAlerta("Somente administradores podem acessar.");
+            return   $this->redirect("/pessoa/index");        
+
+        }
         $this->findModel($idpessoa)->delete();
 
         return $this->redirect(['index']);

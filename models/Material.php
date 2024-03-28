@@ -67,7 +67,7 @@ class Material extends \yii\db\ActiveRecord
             'cod_material' => 'Cod Material',
             'contacontabil' => 'Conta contabil',
             'descricao' => 'Descrição',            
-            'iddependencias' => 'Iddependencias',
+            'iddependencias' => 'Dependência',
             'valoruni' => 'Valor uni.',
             'ativo' => 'Ativo',
         ];
@@ -83,8 +83,12 @@ class Material extends \yii\db\ActiveRecord
         return $this->hasOne(Dependencias::class, ['id' => 'iddependencias'])->one();
     }
 
+    public static function getQueryMateriaisUsuario($idusuario){
+        return Material::find()->where('iddependencias in (select id from dependencias where iddetentor_direto = :iddetentor or iddetentor_indireto = :iddetentor)', ["iddetentor" => $idusuario])->orderBy("descricao");
+    }
+
     public static function getMateriaisUsuario($idusuario){
-        return Material::find()->where('iddependencias in (select id from dependencias where iddetentor_direto = :iddetentor or iddetentor_indireto = :iddetentor)', ["iddetentor" => $idusuario])->orderBy("descricao")->all();
+        return Material::getQueryMateriaisUsuario($idusuario)->all();
     }
 
    

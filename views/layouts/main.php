@@ -75,6 +75,7 @@ $itens[] = ['label' => 'Home', 'url' => ['/site/index']];
         <?php if (!empty($this->params['breadcrumbs'])): ?>
             <?= Breadcrumbs::widget(['links' => $this->params['breadcrumbs']]) ?>
         <?php endif ?>
+       
         <?= Alert::widget() ?>
         <?= $content ?>
     </div>
